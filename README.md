@@ -1,5 +1,5 @@
 # Setup
 
-$ cd react-trello
-$ yarn install
-$ yarn start
+### cd react-kanban
+### yarn install
+### yarn start
