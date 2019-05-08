@@ -1,0 +1,18 @@
+[
+    {
+        "componentChunkName": "component---src-templates-blog-js",
+        "jsonName": "about-771",
+        "path": "/about"
+    },
+    {
+        "componentChunkName": "component---cache-dev-404-page-js",
+        "jsonName": "dev-404-page-5f9",
+        "path": "/dev-404-page/"
+    },
+    {
+        "componentChunkName": "component---src-app-js",
+        "jsonName": "index",
+        "path": "/",
+        "matchPath": "/:path"
+    }
+]
