@@ -13,7 +13,7 @@ exports.createPages = ({ actions, graphql }) => {
     createPage({
       path: '/',
       matchPath: '/:path',
-      component: path.resolve('./src/app.js'),
+      component: path.resolve('src/app.js'),
     })
 
     graphql(`
@@ -32,7 +32,7 @@ exports.createPages = ({ actions, graphql }) => {
       result.data.allMarkdownRemark.edges.forEach(({ node }) => {
         createPage({
           path: node.fields.slug,
-          component: path.resolve('./src/templates/blog.js'),
+          component: path.resolve('src/templates/blog.js'),
         })
       })
       resolve()
