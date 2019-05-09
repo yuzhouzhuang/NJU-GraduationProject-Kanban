@@ -129,7 +129,24 @@ class BoardList extends React.PureComponent {
 
             if (destinationDroppableId !== sourceDroppableId) {
                 // Different list
-                moveCard(this.props.board.boardId, draggableId, sourceDroppableId, destinationDroppableId)
+                let dropList
+                let last = false
+                this.state.sortedList.forEach(list => {
+                    last = false
+                    if (list.columnId.toString() === destinationDroppableId.toString()){
+                        dropList = list
+                        last = true
+                    }
+                })
+                // console.log(dropList)
+                if (dropList){
+                    if (dropList.columnWIP > dropList.cards.length) {
+                        moveCard(this.props.board.boardId, draggableId, sourceDroppableId, destinationDroppableId, last)
+                    } else {
+                        alert("超过在制品限制")
+                    }
+                }
+
                 // // Reorder sourceList.cards
                 // Object.values(sourceList.cards).map(card => {
                 //   if (card.index > sourceIndex) {
@@ -168,12 +185,15 @@ class BoardList extends React.PureComponent {
 
 
     onCreateList = columnName => {
-        const {
-            match: {params},
-        } = this.props
+        let boardId
+        if (localStorage.getItem('board')) {
+
+            boardId = JSON.parse(localStorage.getItem('board')).boardId
+            // boardId = localStorage.getItem('board').boardId
+        }
         createList({
             columnName,
-            boardId: params.boardId,
+            boardId: boardId,
             index: this.state.currentIndex + 1,
         })
     }

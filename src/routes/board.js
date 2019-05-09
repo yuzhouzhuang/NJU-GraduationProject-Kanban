@@ -4,9 +4,13 @@ import {object} from 'prop-types'
 import getPaletteColor from '../services/getPaletteColor'
 import {prop} from 'styled-tools'
 import {Redirect} from 'react-router-dom'
-
 import {Header, BoardHeader, BoardList} from '../components'
 import {getBoard, deleteBoard} from '../firebase/boards'
+import {Menu, Icon} from 'antd';
+import Statistic from './statistic'
+
+const SubMenu = Menu.SubMenu;
+const MenuItemGroup = Menu.ItemGroup;
 // import getPaletteColor from '../services/getPaletteColor'
 
 const Container = styled.div`
@@ -40,7 +44,15 @@ class Board extends React.PureComponent {
     state = {
         board: {},
         timer: {},
-        editable: false
+        editable: false,
+        current: '1',
+    }
+
+    handleClick = (e) => {
+        console.log('click ', e);
+        this.setState({
+            current: e.key,
+        });
     }
 
     componentDidMount() {
@@ -95,6 +107,7 @@ class Board extends React.PureComponent {
         this.state.editable = !this.state.editable
     }
 
+
     render() {
         const {board} = this.state
 
@@ -106,9 +119,29 @@ class Board extends React.PureComponent {
         return (
             <Container>
                 {/*<Header/>*/}
-                <Body>
+                <div>
+                    <Menu
+                        className="board-menu"
+                        onClick={this.handleClick}
+                        selectedKeys={[this.state.current]}
+                        mode="horizontal"
+                    >
+                        <Menu.Item key="1">
+                            <Icon type="schedule"/>浏览
+                        </Menu.Item>
+                        <Menu.Item key="2">
+                            <Icon type="file-add"/>新增
+                        </Menu.Item>
+                        <Menu.Item key="3">
+                            <Icon type="bar-chart"/>统计
+                        </Menu.Item>
+                    </Menu>
+                </div>
+                <Body className="board-body">
                     {/*<BoardHeader boardName={board.boardName} userList={board.ownerId} onLeaveBoard={this.onLeaveBoard}/>*/}
-                    <BoardList board={board} editable={this.state.editable}/>
+                    {this.state.current !== "3" ?
+                        <BoardList board={board} editable={this.state.current === "2"}/> : null}
+                    {this.state.current === "3" ? <Statistic boardId={this.props.boardId}/> : null}
                 </Body>
             </Container>
         )

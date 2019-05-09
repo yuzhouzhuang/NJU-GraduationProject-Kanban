@@ -49,7 +49,7 @@ class ListCards extends React.PureComponent {
         return (
             <Droppable droppableId={listId} type={listType} ignoreContainerClipping>
                 {provided => (
-                    <Container innerRef={provided.innerRef} {...provided.droppableProps}>
+                    <Container innerRef={provided.innerRef} {...provided.droppableProps} {...provided.dragHandleProps}>
                         <ScrollView>
                             {cards.map(card => (
                                 <Draggable

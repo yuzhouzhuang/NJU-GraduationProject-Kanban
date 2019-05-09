@@ -79,3 +79,11 @@
     height: 33%;
     position: absolute;
 }
+.board-menu{
+    float: right;
+    /*margin-top: 100px;*/
+}
+.board-body{
+    /*float: right;*/
+    margin-top: 2%;
+}

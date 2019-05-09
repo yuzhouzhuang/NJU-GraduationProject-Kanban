@@ -6,6 +6,7 @@ import BoardList from './boardList'
 import CreateBoard from './createBoard'
 import Home from "./home";
 import Board from "./board";
+import {history} from "../services/history"
 
 const {SubMenu} = Menu;
 const {Header, Content, Sider} = Layout;
@@ -19,6 +20,10 @@ export default class LayoutPage extends React.Component {
 
     handleClick = (e) => {
         console.log('click ', e);
+        if (e.key === "11") {
+            localStorage.removeItem('user');
+            history.go()
+        }
         this.setState({selectSection: e.key})
     }
 

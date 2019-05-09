@@ -2,12 +2,79 @@ import React from 'react'
 import {ifProp} from 'styled-tools'
 import styled, {css} from 'styled-components'
 import {object, func} from 'prop-types'
-import {Draggable} from 'react-beautiful-dnd'
+import {Draggable, Droppable} from 'react-beautiful-dnd'
 
 import getPaletteColor from '../../../services/getPaletteColor'
 import ListHeader from '../list-header'
 import ListFooter from '../list-footer'
 import ListCards from '../list-cards'
+import {
+    Button, Modal, Form, Input, Radio, Select, InputNumber, Slider, DatePicker
+} from 'antd';
+import {updateCard, updateList} from "../../../firebase/boards";
+import moment from "../../molecules/card-front";
+
+const CollectionCreateForm = Form.create({
+        name: 'form_in_modal',
+        onFieldsChange(props, changedFields) {
+            props.onChange(changedFields);
+        }
+        ,
+        mapPropsToFields(props) {
+            return {
+                title: Form.createFormField({
+                    ...props.title,
+                    value: props.title.value,
+                }),
+                wip: Form.createFormField({
+                    ...props.wip,
+                    value: props.wip.value,
+                }),
+            };
+        },
+        onValuesChange(_, values) {
+            console.log(values);
+        }
+    })
+    ((props) => {
+            const {
+                visible, onCancel, onCreate, form,
+            } = props;
+            const {getFieldDecorator} = form;
+            return (
+                <Modal
+                    visible={visible}
+                    title="修改列信息"
+                    okText="修改"
+                    cancelText="取消"
+                    onCancel={onCancel}
+                    onOk={onCreate}
+                >
+                    <Form layout="vertical">
+                        <Form.Item label="列名称">
+                            {getFieldDecorator('title', {
+                                rules: [{required: true, message: '请选择名称!'}],
+                            })(
+                                <Input/>
+                            )}
+                        </Form.Item>
+                        <Form.Item
+                            label="在制品数量"
+                        >
+                            {getFieldDecorator('wip', {
+                                rules: [
+                                    {required: true, message: '请选择在制品数量!'},
+                                ], initialValue: 3
+                            })(
+                                <InputNumber min={1} max={100}/>
+                            )}
+                        </Form.Item>
+                    </Form>
+                </Modal>
+            );
+        }
+    )
+;
 
 const Container = styled.div`
   border-radius: 3px;
@@ -48,12 +115,39 @@ class List extends React.PureComponent {
         open: false,
         currentIndex: 0,
         sortedCards: [],
+        visible: false,
+        fields: {
+            title: {
+                value: "",
+            },
+            wip: {
+                value: "",
+            },
+        }
     }
 
     componentWillUnmount() {
         document.removeEventListener('click', this.handleClickOutside)
     }
 
+    componentDidMount = () => {
+        const {list} = this.props
+        if (list) {
+            console.log(list)
+            this.setState(
+                {
+                    fields: {
+                        title: {
+                            value: list.title,
+                        },
+                        wip: {
+                            value: list.wip
+                        }
+                    }
+                }
+            )
+        }
+    }
     setFormState = open => () => {
         this.setState({open}, () => {
             if (open) {
@@ -86,20 +180,85 @@ class List extends React.PureComponent {
         })
     }
 
+    showModal = () => {
+        this.setState({visible: true});
+        // console.log(this.state.visible);
+    }
+
+    handleCancel = () => {
+        // console.log("cancel");
+        this.setState({visible: false});
+        // this.state.visible = false;
+        // console.log(this.state.visible);
+    }
+
+    handleCreate = () => {
+        // const form = this.formRef.props.form;
+        // form.validateFields((err, values) => {
+        //     if (err) {
+        //         return;
+        //     }
+        //
+        //     console.log('Received values of form: ', values);
+        //     form.resetFields();
+        //     this.setState({visible: false});
+        // });
+        // console.log('Received values of form: ', this.state.fields);
+        // const {card, columnId, ...props} = this.props
+        // let boardId
+        // if (localStorage.getItem('board')) {
+        //
+        //     boardId = JSON.parse(localStorage.getItem('board')).boardId
+        //     // boardId = localStorage.getItem('board').boardId
+        // }
+        //
+        // let userId
+        // if (localStorage.getItem('user')) {
+        //
+        //     userId = JSON.parse(localStorage.getItem('user')).userId
+        //     // boardId = localStorage.getItem('board').boardId
+        // }
+        // console.log(this.state.)
+        this.state.list = {
+            ...this.props.list,
+            title: this.state.fields.title.value,
+            wip: this.state.fields.wip.value,
+        }
+        updateList(this.state.list.id, this.state.list.title, this.state.list.wip)
+        // updateCard({
+        //     ...this.state.list,
+        // }, boardId, card.cardId, userId).then(card => {
+        // }, error => {
+        //     alert("错误")
+        // })
+        this.setState({visible: false});
+    }
+
+    saveFormRef = (formRef) => {
+        this.formRef = formRef;
+        // console.log(this.formRef)
+        // this.formRef.props.form.setFields({title: "1", description: "1"})
+    }
+
+    handleFormChange = (changedFields) => {
+        this.setState(({fields}) => ({
+            fields: {...fields, ...changedFields},
+        }));
+    }
     getFormRef = node => {
         this.form = node
     }
 
     render() {
         const {
-            list: {title, id, cards},
+            list: {title, id, wip, cards},
             onRemoveList,
             onUpdateListTitle,
             editable
         } = this.props
 
         const {open, sortedCards} = this.state
-
+        const fields = this.state.fields;
         return (
             <Draggable draggableId={id}>
                 {(provided, snapshot) => (
@@ -107,12 +266,18 @@ class List extends React.PureComponent {
                         isDragging={snapshot.isDragging}
                         innerRef={provided.innerRef}
                         {...provided.draggableProps}
+                        {...provided.dragHandleProps}
                     >
-                        <ListHeader
-                            title={title}
-                            onUpdateTitle={onUpdateListTitle}
-                            onRemove={onRemoveList}
-                            dragHandleProps={provided.dragHandleProps}
+                        <Button
+                            onClick={this.showModal}
+                        >{title + "(" + cards.length + "/" + wip + ")"}</Button>
+
+                        <CollectionCreateForm
+                            {...fields} onChange={this.handleFormChange}
+                            wrappedComponentRef={this.saveFormRef}
+                            visible={this.state.visible}
+                            onCancel={this.handleCancel}
+                            onCreate={this.handleCreate}
                         />
                         <ListCards
                             editable={editable}
