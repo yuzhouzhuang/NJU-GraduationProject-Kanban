@@ -1,11 +1,11 @@
 import React from 'react'
-import {Register} from '../components'
+import {RegisterComponent} from '../components'
 
 export default class RegisterPage extends React.PureComponent {
   render () {
     return (
       <React.Fragment>
-        <Register />
+        <RegisterComponent />
       </React.Fragment>
     )
   }

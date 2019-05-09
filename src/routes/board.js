@@ -1,12 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
-import { object } from 'prop-types'
+import {object} from 'prop-types'
 import getPaletteColor from '../services/getPaletteColor'
-import { prop } from 'styled-tools'
-import { Redirect } from 'react-router-dom'
+import {prop} from 'styled-tools'
+import {Redirect} from 'react-router-dom'
 
-import { Header, BoardHeader, BoardList } from '../components'
-import { getBoard, deleteBoard } from '../firebase/boards'
+import {Header, BoardHeader, BoardList} from '../components'
+import {getBoard, deleteBoard} from '../firebase/boards'
 // import getPaletteColor from '../services/getPaletteColor'
 
 const Container = styled.div`
@@ -36,88 +36,83 @@ const Body = styled.main`
 // `
 
 class Board extends React.PureComponent {
-  static propTypes = {
-    match: object.isRequired,
-  }
 
-  state = {
-    board: {},
-    timer: {}
-  }
-
-  componentDidMount() {
-    this.init()
-    let board = this
-    this.state.timer = setInterval(() => {
-      board.init()
-    }, 1000)
-    // this.init()
-  }
-
-  componentWillUnmount(){
-    if(this.state.timer!= null) {
-
-      clearInterval(this.state.timer);
-
-    }
-  }
-
-  init = () => {
-    const {
-      match: { params },
-    } = this.props
-    let boardId = params.boardId
-
-    if (!boardId) {
-      this.setState({ board: null })
-      return
+    state = {
+        board: {},
+        timer: {},
+        editable: false
     }
 
-    getBoard(boardId).then(board => {
-      this.setState({ board: board })
-      localStorage.setItem('board', JSON.stringify(board))
-      // console.log(board)
-      // console.log(localStorage.getItem('user'))
-    })
-  }
-
-
-  // componentWillReceiveProps = (props) => {
-  //   let board = this
-  //   this.timer = setInterval(() => {
-  //     board.init()
-  //   }, 100)
-  //
-  // }
-  // componentWillUnmount() {
-  //   document.body.style.background = 'none'
-  //   if (typeof this.unsubcribe === 'function') {
-  //     this.unsubcribe()
-  //   }
-  // }
-
-  onLeaveBoard = () => {
-    deleteBoard(this.state.board.id)
-  }
-
-  render() {
-    const { board } = this.state
-
-    if (!board) {
-      return <Redirect to={{ pathname: '/404' }}/>
+    componentDidMount() {
+        this.init()
+        let board = this
+        this.state.timer = setInterval(() => {
+            board.init()
+        }, 1000)
+        // this.init()
     }
 
-    // console.log(board)
-    return (
-      <Container>
-        <Header/>
-        <Body>
-          <BoardHeader boardName={board.boardName} userList={board.ownerId} onLeaveBoard={this.onLeaveBoard}/>
-          <BoardList board={board}/>
-        </Body>
-      </Container>
-    )
-  }
+    componentWillUnmount() {
+        if (this.state.timer != null) {
+
+            clearInterval(this.state.timer);
+
+        }
+    }
+
+    init = () => {
+        let boardId = this.props.boardId;
+
+        if (!boardId) {
+            this.setState({board: null});
+            return
+        }
+
+        getBoard(boardId).then(board => {
+            this.setState({board: board})
+            localStorage.setItem('board', JSON.stringify(board))
+            // console.log(board)
+            // console.log(localStorage.getItem('user'))
+        })
+    }
+
+
+    // componentWillReceiveProps = (props) => {
+    //   let board = this
+    //   this.timer = setInterval(() => {
+    //     board.init()
+    //   }, 100)
+    //
+    // }
+    // componentWillUnmount() {
+    //   document.body.style.background = 'none'
+    //   if (typeof this.unsubcribe === 'function') {
+    //     this.unsubcribe()
+    //   }
+    // }
+
+    onLeaveBoard = () => {
+        this.state.editable = !this.state.editable
+    }
+
+    render() {
+        const {board} = this.state
+
+        if (!board) {
+            return <Redirect to={{pathname: '/404'}}/>
+        }
+
+        // console.log(board)
+        return (
+            <Container>
+                {/*<Header/>*/}
+                <Body>
+                    {/*<BoardHeader boardName={board.boardName} userList={board.ownerId} onLeaveBoard={this.onLeaveBoard}/>*/}
+                    <BoardList board={board} editable={this.state.editable}/>
+                </Body>
+            </Container>
+        )
+    }
 }
 
 export default Board

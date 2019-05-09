@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Droppable, Draggable } from 'react-beautiful-dnd'
-import { string, func, bool, array } from 'prop-types'
+import {Droppable, Draggable} from 'react-beautiful-dnd'
+import {string, func, bool, array} from 'prop-types'
 
-import { CardFront, FormAddCard } from '../../molecules'
+import {CardFront, FormAddCard} from '../../molecules'
 
 const Container = styled.div`
   min-height: 26px;
@@ -24,63 +24,66 @@ const ScrollView = styled.div`
 `
 
 class ListCards extends React.PureComponent {
-  static propTypes = {
-    listId: string,
-    listType: string,
-    onAddCard: func,
-    onCloseForm: func,
-    isFormShow: bool,
-    getFormRef: func,
-    cards: array,
-  }
+    static propTypes = {
+        listId: string,
+        listType: string,
+        onAddCard: func,
+        onCloseForm: func,
+        isFormShow: bool,
+        getFormRef: func,
+        cards: array,
+    }
 
-  render () {
-    const {
-      listId,
-      listType,
-      onAddCard,
-      isFormShow,
-      onCloseForm,
-      getFormRef,
-      cards,
-    } = this.props
+    render() {
+        const {
+            listId,
+            listType,
+            onAddCard,
+            isFormShow,
+            onCloseForm,
+            getFormRef,
+            cards,
+            editable
+        } = this.props
 
-    return (
-      <Droppable droppableId={listId} type={listType} ignoreContainerClipping>
-        {provided => (
-          <Container innerRef={provided.innerRef} {...provided.droppableProps}>
-            <ScrollView>
-              {cards.map(card => (
-                <Draggable
-                  draggableId={card.cardId}
-                  key={card.cardId}
-                >
-                  {(dragProvided, dragSnapshot) => (
-                    <CardFront
-                      innerRef={dragProvided.innerRef}
-                      isDragging={dragSnapshot.isDragging}
-                      {...dragProvided.dragHandleProps}
-                      {...dragProvided.draggableProps}
-                      card={card}
-                      columnId={listId}
-                    />
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-              {isFormShow && (
-                <FormAddCard
-                  innerRef={getFormRef}
-                  onClose={onCloseForm}
-                  onSubmit={onAddCard}
-                />
-              )}
-            </ScrollView>
-          </Container>
-        )}
-      </Droppable>
-    )
-  }
+        return (
+            <Droppable droppableId={listId} type={listType} ignoreContainerClipping>
+                {provided => (
+                    <Container innerRef={provided.innerRef} {...provided.droppableProps}>
+                        <ScrollView>
+                            {cards.map(card => (
+                                <Draggable
+                                    draggableId={card.cardId}
+                                    key={card.cardId}
+                                >
+                                    {(dragProvided, dragSnapshot) => (
+                                        <CardFront
+                                            innerRef={dragProvided.innerRef}
+                                            isDragging={dragSnapshot.isDragging}
+                                            {...dragProvided.dragHandleProps}
+                                            {...dragProvided.draggableProps}
+                                            card={card}
+                                            columnId={listId}
+                                        />
+                                    )}
+                                </Draggable>
+                            ))}
+                            {provided.placeholder}
+                            {editable ?
+                                (isFormShow && (
+                                    <FormAddCard
+                                        innerRef={getFormRef}
+                                        onClose={onCloseForm}
+                                        onSubmit={onAddCard}
+                                    />
+                                )) : null
+                            }
+                        </ScrollView>
+                    </Container>
+                )}
+            </Droppable>
+        )
+    }
 }
 
 export default ListCards

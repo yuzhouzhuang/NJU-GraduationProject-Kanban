@@ -69,7 +69,7 @@ class InitialList extends React.PureComponent {
     return (
       <Container innerRef={this.getContainerRef}>
         <PlaceholderAddAction
-          actionContent='Add another list'
+          actionContent='添加列'
           onClick={this.setFormState(true)}
         />
         {this.state.isOpen && (

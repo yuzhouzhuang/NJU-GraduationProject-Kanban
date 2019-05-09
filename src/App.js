@@ -9,9 +9,9 @@ import './services/globalStyles'
 
 import theme from './theme'
 import ModalSwitch from './modal-switch'
-import { createMemoryHistory } from 'history';
+import { createBrowserHistory } from 'history';
 
-const history = createMemoryHistory();
+const history = createBrowserHistory();
 
 const App = () => {
     return (

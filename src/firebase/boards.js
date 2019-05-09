@@ -77,16 +77,13 @@ export const getBoardList = (boardId, onListChange) => {
   // return () => listRef.off('value')
 }
 
-export const getList = (listId, onListChange) => {
-  // const listRef = Firebase.database.ref('list').child(listId)
-  //
-  // listRef.on('value', snapshot => {
-  //   const snapshotValue = snapshot.val() || {}
-  //
-  //   onListChange(snapshotValue)
-  // })
-  //
-  // return () => listRef.off('value')
+export const updateList = (columnId, columnName, columnWIP) => {
+  const currentUser = JSON.parse(localStorage.getItem('user'))
+  return fetch(`http://101.132.188.238:8080/kanban/column/modify/${columnId}/${currentUser.userId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ columnName, columnWIP }),
+  }).then(handleCardUpdateResponse)
 }
 
 export const createList = ({ columnName, boardId }) => {

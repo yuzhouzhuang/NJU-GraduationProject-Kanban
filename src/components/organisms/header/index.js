@@ -3,7 +3,7 @@ import { object } from 'prop-types'
 import { prop } from 'styled-tools'
 import styled from 'styled-components'
 import { withRouter } from 'react-router-dom'
-
+import getPaletteColor from '../../../services/getPaletteColor'
 // import AuthContext from '../../../context/auth'
 import { Button, Heading } from '../../atoms'
 import { Box } from '../../utilities'
@@ -18,7 +18,7 @@ const NavSection = Box.extend`
 const Container = styled.header`
   padding: 8px;
   width: 100%;
-  background-color: ${prop('background', 'rgba(0, 0, 0, 0.15)')};
+  background: ${getPaletteColor('blue', 500)};
   display: flex;
   justify-content: space-between;
   align-items: center;

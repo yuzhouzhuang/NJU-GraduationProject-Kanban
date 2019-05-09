@@ -10,7 +10,7 @@ const Container = styled.div`
   align-items: center;
   margin-bottom: 2px;
   flex: 0 0 auto;
-  padding: 12px 68px 10px 8px;
+  padding: 12px 12px 10px 8px;
   min-height: 22px;
   position: relative;
 `
@@ -136,7 +136,18 @@ class ListHeader extends React.PureComponent {
           onBlur={this.onBlur}
           onKeyDown={this.handleKeydown}
         />
-        <ButtonRemove icon='Remove' onClick={onRemove} />
+        {/*WIP*/}
+        {/*<TitleInput*/}
+        {/*    spellCheck={false}*/}
+        {/*    autoCorrect={'false'}*/}
+        {/*    maxLength={512}*/}
+        {/*    innerRef={this.getInputRef}*/}
+        {/*    value={title}*/}
+        {/*    onChange={this.onChange}*/}
+        {/*    onBlur={this.onBlur}*/}
+        {/*    onKeyDown={this.handleKeydown}*/}
+        {/*/>*/}
+        {/*<ButtonRemove icon='Remove' onClick={onRemove} />*/}
       </Container>
     )
   }

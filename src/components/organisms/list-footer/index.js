@@ -18,7 +18,7 @@ const Container = styled.div`
 const ListFooter = props => {
   return (
     <Container {...props}>
-      <PlaceholderAddAction actionContent='Add another card' />
+      <PlaceholderAddAction actionContent='添加卡片' />
     </Container>
   )
 }

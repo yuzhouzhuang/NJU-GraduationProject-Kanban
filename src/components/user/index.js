@@ -1,2 +1,2 @@
 export { default as LoginComponent } from './login'
-export { default as Register } from './register'
+export { default as RegisterComponent } from './register'

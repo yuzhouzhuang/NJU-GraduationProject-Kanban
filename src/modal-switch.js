@@ -2,7 +2,7 @@ import React from 'react'
 import { object } from 'prop-types'
 import { Route, Switch } from 'react-router-dom'
 
-import { LoginPage, HomePage, Board, NotFound, Card, RegisterPage } from './routes'
+import { LoginPage, HomePage, Board, NotFound, Card, RegisterPage, LayoutPage } from './routes'
 import PrivateRoute from './private-route'
 
 class ModalSwitch extends React.PureComponent {
@@ -36,11 +36,11 @@ class ModalSwitch extends React.PureComponent {
     return (
       <React.Fragment>
         <Switch location={isModal ? this.previousLocation : location}>
-          <PrivateRoute exact path='/' component={HomePage} />
+          <PrivateRoute exact path='/' component={LayoutPage} />
           <PrivateRoute exact path='/b/:boardId' component={Board} />
           <PrivateRoute exact path='/c/:boardId/:columnId/:cardId' component={Board} />
-          <Route path='/login' component={LoginPage} />
-          <Route path='/register' component={RegisterPage} />
+          <Route exact path='/login' component={LoginPage} />
+          <Route eact path='/register' component={RegisterPage} />
           <Route path='*' component={NotFound} />
         </Switch>
         <PrivateRoute exact path='/c/:boardId/:columnId/:cardId' component={Card} />

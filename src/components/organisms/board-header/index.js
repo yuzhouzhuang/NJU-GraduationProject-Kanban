@@ -4,7 +4,7 @@ import { string, func } from 'prop-types'
 import getPaletteColor from '../../../services/getPaletteColor'
 
 import { Button } from '../../atoms'
-import Label from '../../atoms/icon/icons/Label'
+// import Label from '../../atoms/icon/icons/Label'
 
 const Container = styled.div`
   height: 48px;
@@ -12,7 +12,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-    background: ${getPaletteColor('shades', 0)};
+  background: ${getPaletteColor('blue', 300)};
 `
 
 const BoardHeader = ({ boardName, userList, onLeaveBoard }) => {
