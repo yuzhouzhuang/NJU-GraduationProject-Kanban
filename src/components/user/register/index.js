@@ -50,7 +50,7 @@ export default class RegisterComponent extends React.Component {
   }
 
   register (user) {
-    return fetch(`http://localhost:8080/user/register`, {
+    return fetch(`http://101.132.188.238:8080/user/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
