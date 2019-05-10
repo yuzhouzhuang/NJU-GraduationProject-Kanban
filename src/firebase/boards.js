@@ -3,7 +3,7 @@
 export const createBoard = ({name}) => {
     const currentUser = JSON.parse(localStorage.getItem('user'))
 
-    return fetch(`http://localhost:8080/kanbans/kanban/${currentUser.userId}`, {
+    return fetch(`http://101.132.188.238:8080/kanbans/kanban/${currentUser.userId}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({boardName: name, ownerId: currentUser.userId}),
@@ -17,7 +17,7 @@ export const getBoards = () => {
 
     const ownerId = JSON.parse(localStorage.getItem('user')).userId
 
-    return fetch(`http://localhost:8080/kanbans/owner/${ownerId}`, requestOptions).then(handleResponse)
+    return fetch(`http://101.132.188.238:8080/kanbans/owner/${ownerId}`, requestOptions).then(handleResponse)
 }
 
 function handleResponse(response) {
@@ -41,7 +41,7 @@ function handleKanbanResponse(response) {
 }
 
 export const getBoard = (boardId) => {
-    return fetch(`http://localhost:8080/kanbans/${boardId}`, {
+    return fetch(`http://101.132.188.238:8080/kanbans/${boardId}`, {
         method: 'GET',
     })
         .then(handleKanbanResponse)
@@ -79,7 +79,7 @@ export const getBoardList = (boardId, onListChange) => {
 
 export const updateList = (columnId, columnName, columnWip) => {
     const currentUser = JSON.parse(localStorage.getItem('user'))
-    return fetch(`http://localhost:8080/kanban/column/modify/${columnId}/${currentUser.userId}`, {
+    return fetch(`http://101.132.188.238:8080/kanban/column/modify/${columnId}/${currentUser.userId}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({columnName, columnWip}),
@@ -89,7 +89,7 @@ export const updateList = (columnId, columnName, columnWip) => {
 export const createList = ({columnName, boardId}) => {
     // const currentUser = JSON.parse(localStorage.getItem('user'))
 
-    return fetch(`http://localhost:8080/kanban/column/create/${boardId}`, {
+    return fetch(`http://101.132.188.238:8080/kanban/column/create/${boardId}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({columnName, boardId}),
@@ -127,7 +127,7 @@ export const createCard = ({listId, boardId, title}) => {
         scale: 5,
         color: 'blue',
     }
-    return fetch(`http://localhost:8080/kanban/card/create/${boardId}/${listId}`, {
+    return fetch(`http://101.132.188.238:8080/kanban/card/create/${boardId}/${listId}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(card),
@@ -136,7 +136,7 @@ export const createCard = ({listId, boardId, title}) => {
 
 export const deleteCard = (cardId, boardId) => {
     const currentUser = JSON.parse(localStorage.getItem('user'))
-    return fetch(`http://localhost:8080/kanban/card/delete/${boardId}/${cardId}/${currentUser.userId}`, {
+    return fetch(`http://101.132.188.238:8080/kanban/card/delete/${boardId}/${cardId}/${currentUser.userId}`, {
         method: 'DELETE',
     }).then(handleCardUpdateResponse)
 }
@@ -151,14 +151,14 @@ function handleCardResponse(response) {
 
 
 export const getCard = ({cardId}) => {
-    return fetch(`http://localhost:8080/kanbans/${cardId}`, {
+    return fetch(`http://101.132.188.238:8080/kanbans/${cardId}`, {
         method: 'GET',
     })
         .then(handleKanbanResponse)
 }
 
 export const updateCard = (data, boardId, cardId, userId) => {
-    return fetch(`http://localhost:8080/kanban/card/modify/${boardId}/${cardId}/${userId}`, {
+    return fetch(`http://101.132.188.238:8080/kanban/card/modify/${boardId}/${cardId}/${userId}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data),
@@ -184,7 +184,7 @@ export const moveCard = (boardId, cardId, sourceLaneId, targetLaneId, isFinish) 
     const data = {
         cardId, sourceLaneId, targetLaneId, userId, version, isFinish: isFinish ? 1 : 0
     }
-    return fetch(`http://localhost:8080/kanban/card/move/${boardId}`, {
+    return fetch(`http://101.132.188.238:8080/kanban/card/move/${boardId}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data),

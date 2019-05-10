@@ -42,7 +42,7 @@ export default class Statistic extends React.Component {
     fetchLog = (params = {}) => {
         // console.log('params:', params);
         this.setState({loading: true});
-        fetch(`http://localhost:8080/kanbans/Logs/get/${this.props.boardId}`, {
+        fetch(`http://101.132.188.238:8080/kanbans/Logs/get/${this.props.boardId}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
         }).then(this.handleResponse).then(data => {
@@ -73,7 +73,7 @@ export default class Statistic extends React.Component {
     fetchLeadTime = (params = {}) => {
         // console.log('params:', params);
         this.setState({loading: true});
-        fetch(`http://localhost:8080/kanbans/leadTime/${this.props.boardId}`, {
+        fetch(`http://101.132.188.238:8080/kanbans/leadTime/${this.props.boardId}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
         }).then(this.handleLeadTimeResponse).then(data => {
@@ -97,7 +97,7 @@ export default class Statistic extends React.Component {
     fetchThroughput = (params = {}) => {
         // console.log('params:', params);
         this.setState({loading: true});
-        fetch(`http://localhost:8080/kanbans/throughput/${this.props.boardId}`, {
+        fetch(`http://101.132.188.238:8080/kanbans/throughput/${this.props.boardId}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
         }).then(this.handleThroughputResponse).then(data => {

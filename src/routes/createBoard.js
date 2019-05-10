@@ -40,7 +40,7 @@ import {history} from '../services'
 //   }
 //
 //   login (email, password) {
-//     return fetch(`http://localhost:8080/user/login`, {
+//     return fetch(`http://101.132.188.238:8080/user/login`, {
 //       method: 'POST',
 //       headers: { 'Content-Type': 'application/json' },
 //       body: JSON.stringify({email, password}),
