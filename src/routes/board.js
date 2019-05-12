@@ -5,9 +5,10 @@ import getPaletteColor from '../services/getPaletteColor'
 import {prop} from 'styled-tools'
 import {Redirect} from 'react-router-dom'
 import {Header, BoardHeader, BoardList} from '../components'
-import {getBoard, deleteBoard} from '../firebase/boards'
+import {getBoard, deleteBoard, createList} from '../firebase/boards'
 import {Menu, Icon} from 'antd';
-import Statistic from './statistic'
+import StatisticPage from './statisticPage'
+import GroupPage from "./groupInfo";
 
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
@@ -83,6 +84,20 @@ class Board extends React.PureComponent {
         getBoard(boardId).then(board => {
             this.setState({board: board})
             localStorage.setItem('board', JSON.stringify(board))
+            if (board.columns.length === 0){
+                createList({
+                    columnName: "初始列表项",
+                    boardId: boardId,
+                    columnOrder:1,
+                    columnWIP: 1000,
+                })
+                createList({
+                    columnName: "完成列表项",
+                    boardId: boardId,
+                    columnOrder:2,
+                    columnWIP: 1000,
+                })
+            }
             // console.log(board)
             // console.log(localStorage.getItem('user'))
         })
@@ -130,18 +145,22 @@ class Board extends React.PureComponent {
                             <Icon type="schedule"/>浏览
                         </Menu.Item>
                         <Menu.Item key="2">
-                            <Icon type="file-add"/>新增
+                            <Icon type="edit"/>修改
                         </Menu.Item>
                         <Menu.Item key="3">
                             <Icon type="bar-chart"/>统计
+                        </Menu.Item>
+                        <Menu.Item key="4">
+                            <Icon type="user"/>团队
                         </Menu.Item>
                     </Menu>
                 </div>
                 <Body className="board-body">
                     {/*<BoardHeader boardName={board.boardName} userList={board.ownerId} onLeaveBoard={this.onLeaveBoard}/>*/}
-                    {this.state.current !== "3" ?
+                    {(this.state.current === "1" || this.state.current === "2") ?
                         <BoardList board={board} editable={this.state.current === "2"}/> : null}
-                    {this.state.current === "3" ? <Statistic boardId={this.props.boardId}/> : null}
+                    {this.state.current === "3" ? <StatisticPage boardId={this.props.boardId}/> : null}
+                    {this.state.current === "4" ? <GroupPage boardId={this.props.boardId}/> : null}
                 </Body>
             </Container>
         )

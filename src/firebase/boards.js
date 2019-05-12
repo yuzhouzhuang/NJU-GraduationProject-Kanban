@@ -20,6 +20,16 @@ export const getBoards = () => {
     return fetch(`http://101.132.188.238:8080/kanbans/owner/${ownerId}`, requestOptions).then(handleResponse)
 }
 
+export const getUserBoards = () => {
+    const requestOptions = {
+        method: 'GET',
+    }
+
+    const ownerId = JSON.parse(localStorage.getItem('user')).userId
+
+    return fetch(`http://101.132.188.238:8080/kanbans/user/boardList/${ownerId}`, requestOptions).then(handleResponse)
+}
+
 function handleResponse(response) {
     return response.text().then(text => {
         const data = text && JSON.parse(text)
@@ -86,13 +96,13 @@ export const updateList = (columnId, columnName, columnWip) => {
     }).then(handleCardUpdateResponse)
 }
 
-export const createList = ({columnName, boardId}) => {
+export const createList = ({columnName, boardId, columnOrder, columnWIP}) => {
     // const currentUser = JSON.parse(localStorage.getItem('user'))
 
     return fetch(`http://101.132.188.238:8080/kanban/column/create/${boardId}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({columnName, boardId}),
+        body: JSON.stringify({columnName, boardId, columnOrder, columnWIP}),
     }).then(handleCardUpdateResponse)
 }
 
@@ -100,21 +110,10 @@ export const createList = ({columnName, boardId}) => {
 //   return Firebase.database.ref('list').update(data)
 // }
 
-export const deleteList = ({listId}) => {
-    // const listRef = Firebase.database.ref('list').child(listId)
-    //
-    // listRef.off('value')
-    //
-    // listRef.remove(error => {
-    //   if (!error) {
-    //     const cardRefs = Firebase.database
-    //       .ref('cards')
-    //       .orderByChild('listId')
-    //       .equalTo(listId).ref
-    //     cardRefs.off('value')
-    //     cardRefs.remove()
-    //   }
-    // })
+export const deleteList = (listId) => {
+    return fetch(`http://101.132.188.238:8080/kanban/column/delete/${listId}`, {
+        method: 'DELETE',
+    }).then(handleCardUpdateResponse)
 }
 
 export const createCard = ({listId, boardId, title}) => {
@@ -126,6 +125,7 @@ export const createCard = ({listId, boardId, title}) => {
         deadline: '2019-12-31 19:52:24',
         scale: 5,
         color: 'blue',
+        creatorId: currentUser.userId
     }
     return fetch(`http://101.132.188.238:8080/kanban/card/create/${boardId}/${listId}`, {
         method: 'POST',

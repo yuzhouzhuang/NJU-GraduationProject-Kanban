@@ -3,13 +3,13 @@ import {object} from 'prop-types'
 import styled from 'styled-components'
 import {withRouter} from 'react-router-dom'
 import {DragDropContext, Droppable} from 'react-beautiful-dnd'
-import {moveCard} from '../../../firebase/boards'
+import {getCard, moveCard, updateCard} from '../../../firebase/boards'
 
 import {
     getBoardList,
     createList,
     createCard,
-    deleteList, getBoard,updateList
+    deleteList, getBoard, updateList
 } from '../../../firebase/boards'
 import List from '../list'
 import InitialList from '../initial-list'
@@ -86,39 +86,43 @@ class BoardList extends React.PureComponent {
         // const mutatedList = { ...list }
 
         // if (type === 'LIST') {
-        //   const moveToRight = destinationIndex > sourceIndex
-        //   const moveToLeft = destinationIndex < sourceIndex
-        //   const notMove = destinationIndex === sourceIndex
+        //     const destinationDroppableId = destination.droppableId
+        //     const sourceDroppableId = source.droppableId
+        //     console.log(destination)
+        //     console.log(source)
+        // const moveToRight = destinationIndex > sourceIndex
+        // const moveToLeft = destinationIndex < sourceIndex
+        // const notMove = destinationIndex === sourceIndex
         //
-        //   if (notMove) {
-        //     return
+        // if (notMove) {
+        //   return
+        // }
+        //
+        // sortedList.map(item => {
+        //   const itemIndex = item.index
+        //
+        //   if (item.index === sourceIndex) {
+        //     mutatedList[item.id].index = destinationIndex
         //   }
         //
-        //   sortedList.map(item => {
-        //     const itemIndex = item.index
+        //   if (
+        //     moveToRight &&
+        //     itemIndex <= destinationIndex &&
+        //     itemIndex > sourceIndex
+        //   ) {
+        //     mutatedList[item.id].index -= 1
+        //   }
         //
-        //     if (item.index === sourceIndex) {
-        //       mutatedList[item.id].index = destinationIndex
-        //     }
+        //   if (
+        //     moveToLeft &&
+        //     itemIndex >= destinationIndex &&
+        //     itemIndex < sourceIndex
+        //   ) {
+        //     mutatedList[item.id].index += 1
+        //   }
+        // })
         //
-        //     if (
-        //       moveToRight &&
-        //       itemIndex <= destinationIndex &&
-        //       itemIndex > sourceIndex
-        //     ) {
-        //       mutatedList[item.id].index -= 1
-        //     }
-        //
-        //     if (
-        //       moveToLeft &&
-        //       itemIndex >= destinationIndex &&
-        //       itemIndex < sourceIndex
-        //     ) {
-        //       mutatedList[item.id].index += 1
-        //     }
-        //   })
-        //
-        //   updateList(mutatedList)
+        // updateList(mutatedList)
         // }
 
         if (type === 'CARD') {
@@ -133,15 +137,37 @@ class BoardList extends React.PureComponent {
                 let last = false
                 this.state.sortedList.forEach(list => {
                     last = false
-                    if (list.columnId.toString() === destinationDroppableId.toString()){
+                    if (list.columnId.toString() === destinationDroppableId.toString()) {
                         dropList = list
                         last = true
                     }
                 })
                 // console.log(dropList)
-                if (dropList){
+                if (dropList) {
                     if (dropList.columnWIP > dropList.cards.length) {
-                        moveCard(this.props.board.boardId, draggableId, sourceDroppableId, destinationDroppableId, last)
+                        if (last) {
+                            let movecard = {}
+                            let column = {}
+                            this.state.sortedList.forEach(list => {
+                                // console.log(list)
+                                if (list.columnId.toString() === sourceDroppableId.toString()) {
+                                    column = list
+                                }
+                            })
+                            column.cards.forEach(card => {
+                                if (card.cardId.toString() === draggableId.toString()) {
+                                    movecard = card
+                                }
+                            })
+                            movecard.rate = 9;
+                            // movecard.columnId = destinationDroppableId;
+                            updateCard(movecard, this.props.board.boardId, draggableId, JSON.parse(localStorage.getItem('user')).userId).then(
+                                card => moveCard(this.props.board.boardId, draggableId, sourceDroppableId, destinationDroppableId, last)
+                            )
+                        } else {
+                            moveCard(this.props.board.boardId, draggableId, sourceDroppableId, destinationDroppableId, last)
+                        }
+
                     } else {
                         alert("超过在制品限制")
                     }
@@ -184,17 +210,19 @@ class BoardList extends React.PureComponent {
     }
 
 
-    onCreateList = columnName => {
+    onCreateList = (columnName, columnOrder) => {
         let boardId
         if (localStorage.getItem('board')) {
 
             boardId = JSON.parse(localStorage.getItem('board')).boardId
             // boardId = localStorage.getItem('board').boardId
         }
+        console.log(columnName + "," + columnOrder)
         createList({
             columnName,
             boardId: boardId,
-            index: this.state.currentIndex + 1,
+            columnOrder,
+            columnWIP: 3,
         })
     }
 
@@ -211,12 +239,27 @@ class BoardList extends React.PureComponent {
         updateList(list.columnId, title, list.columnWIP)
     }
 
+    isLast = order => {
+        let last = true
+        this.state.sortedList.forEach((list) => {
+            if (list.columnOrder > order) {
+                last = false
+            }
+        })
+        return last
+    }
+
     render() {
         const {sortedList} = this.state
         if (!sortedList) {
             return null
         }
         const elements = []
+        let index = 1
+        let lastId
+        sortedList.forEach((list) => {
+            lastId = list.columnId
+        })
         sortedList.forEach((list) => {
             let cards = list.cards
             // console.log(cards)
@@ -226,14 +269,24 @@ class BoardList extends React.PureComponent {
                 <Column key={list.columnId}>
                     <List
                         editable={this.props.editable}
-                        list={{title: list.columnName, id: list.columnId.toString(), cards: sortedCards, order: list.columnOrder, wip: list.columnWIP}}
+                        isEdged={(index === 1 || index === sortedList.length)}
+                        list={{
+                            title: list.columnName,
+                            id: list.columnId.toString(),
+                            cards: sortedCards,
+                            order: list.columnOrder,
+                            wip: list.columnWIP
+                        }}
+                        lastid ={lastId}
                         onCreateCard={this.onCreateCard(list.columnId, this.props.board.boardId)}
                         onRemoveList={this.onRemoveList(list.id)}
                         onUpdateListTitle={this.onUpdateList(list)}
                     />
                 </Column>,
             )
+            index = index + 1
         })
+        // console.log(sortedList.length)
         return (
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <BoardCanvas>
@@ -247,7 +300,7 @@ class BoardList extends React.PureComponent {
                                 {provided.placeholder}
                                 {this.props.editable ? (
                                     <Column>
-                                        <InitialList onCreate={this.onCreateList}/>
+                                        <InitialList listsize={sortedList.length} onCreate={this.onCreateList}/>
                                     </Column>) : null
                                 }
                             </BoardContent>

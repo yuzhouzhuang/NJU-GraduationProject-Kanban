@@ -58,6 +58,7 @@ class ListCards extends React.PureComponent {
                                 >
                                     {(dragProvided, dragSnapshot) => (
                                         <CardFront
+                                            lastid={this.props.lastid}
                                             innerRef={dragProvided.innerRef}
                                             isDragging={dragSnapshot.isDragging}
                                             {...dragProvided.dragHandleProps}

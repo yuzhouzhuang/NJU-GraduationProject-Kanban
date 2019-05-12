@@ -139,7 +139,7 @@ class FormAddCard extends React.PureComponent {
         <PaperInput>
           <TitleInput
             innerRef={this.getInputRef}
-            placeholder='Enter a title for this card...'
+            placeholder='卡片名称'
             value={this.state.title}
             onChange={this.onChange}
             onBlur={this.resizeInput}
@@ -149,7 +149,7 @@ class FormAddCard extends React.PureComponent {
         </PaperInput>
         <Action>
           <Button type='submit' variant='Green'>
-            Add Card
+            增加卡片
           </Button>
           <ButtonClose type='button' icon='Close' onClick={this.onClose} />
         </Action>

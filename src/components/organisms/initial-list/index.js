@@ -55,9 +55,9 @@ class InitialList extends React.PureComponent {
     })
   }
 
-  onSubmit = title => {
+  onSubmit = (title,order) => {
     const { onCreate } = this.props
-    onCreate(title)
+    onCreate(title,order)
     this.setFormState(false)()
   }
 
@@ -66,6 +66,7 @@ class InitialList extends React.PureComponent {
   }
 
   render () {
+    let size = this.props.listsize
     return (
       <Container innerRef={this.getContainerRef}>
         <PlaceholderAddAction
@@ -74,6 +75,7 @@ class InitialList extends React.PureComponent {
         />
         {this.state.isOpen && (
           <FormAddList
+              listsize ={size}
             actionContent='Add List'
             onClose={this.setFormState(false)}
             onSubmit={this.onSubmit}

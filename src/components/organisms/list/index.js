@@ -9,9 +9,9 @@ import ListHeader from '../list-header'
 import ListFooter from '../list-footer'
 import ListCards from '../list-cards'
 import {
-    Button, Modal, Form, Input, Radio, Select, InputNumber, Slider, DatePicker
+    Button, Modal, Form, Input, Radio, Select, InputNumber, Slider, DatePicker, Popconfirm
 } from 'antd';
-import {updateCard, updateList} from "../../../firebase/boards";
+import {deleteList, updateCard, updateList} from "../../../firebase/boards";
 import moment from "../../molecules/card-front";
 
 const CollectionCreateForm = Form.create({
@@ -70,6 +70,9 @@ const CollectionCreateForm = Form.create({
                             )}
                         </Form.Item>
                     </Form>
+                    <Popconfirm title="确认删除?" onConfirm={(record) => props.onDelete(record)}>
+                        <Button type="danger" block>删除列</Button>
+                    </Popconfirm>
                 </Modal>
             );
         }
@@ -249,6 +252,27 @@ class List extends React.PureComponent {
         this.form = node
     }
 
+    handleDelete = () => {
+        // const form = this.formRef.props.form;
+        // form.validateFields((err, values) => {
+        //     if (err) {
+        //         return;
+        //     }
+        //
+        //     console.log('Received values of form: ', values);
+        //     form.resetFields();
+        //     this.setState({visible: false});
+        // });
+        // console.log('Received values of form: ', this.state.fields);
+        const {list, ...props} = this.props
+        console.log(list)
+        deleteList(list.id).then(list => {
+        }, error => {
+            alert("错误")
+        })
+        this.setState({visible: false});
+    }
+
     render() {
         const {
             list: {title, id, wip, cards},
@@ -270,7 +294,8 @@ class List extends React.PureComponent {
                     >
                         <Button
                             onClick={this.showModal}
-                        >{title + "(" + cards.length + "/" + wip + ")"}</Button>
+                            style={{fontSize:'15px'}}
+                        >{this.props.isEdged ? title : (title + "(" + cards.length + "/" + wip + ")")}</Button>
 
                         <CollectionCreateForm
                             {...fields} onChange={this.handleFormChange}
@@ -278,8 +303,10 @@ class List extends React.PureComponent {
                             visible={this.state.visible}
                             onCancel={this.handleCancel}
                             onCreate={this.handleCreate}
+                            onDelete={this.handleDelete}
                         />
                         <ListCards
+                            lastid={this.props.lastid}
                             editable={editable}
                             listId={id}
                             cards={cards}

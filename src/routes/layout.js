@@ -6,6 +6,7 @@ import BoardList from './boardList'
 import CreateBoard from './createBoard'
 import Home from "./home";
 import Board from "./board";
+import GroupPage from './groupInfo'
 import {history} from "../services/history"
 
 const {SubMenu} = Menu;
@@ -55,15 +56,15 @@ export default class LayoutPage extends React.Component {
                                     {/*<Menu.Item key="3">option3</Menu.Item>*/}
                                     {/*<Menu.Item key="4">option4</Menu.Item>*/}
                                 </SubMenu>
-                                <SubMenu key="sub2" title={<span><Icon type="pie-chart"/>统计</span>}>
-                                    <Menu.Item key="5">统计信息</Menu.Item>
-                                    {/*<Menu.Item key="6">option6</Menu.Item>*/}
-                                    {/*<Menu.Item key="7">option7</Menu.Item>*/}
-                                    {/*<Menu.Item key="8">option8</Menu.Item>*/}
-                                </SubMenu>
+                                {/*<SubMenu key="sub2" title={<span><Icon type="pie-chart"/>统计</span>}>*/}
+                                {/*    <Menu.Item key="5">统计信息</Menu.Item>*/}
+                                {/*    /!*<Menu.Item key="6">option6</Menu.Item>*!/*/}
+                                {/*    /!*<Menu.Item key="7">option7</Menu.Item>*!/*/}
+                                {/*    /!*<Menu.Item key="8">option8</Menu.Item>*!/*/}
+                                {/*</SubMenu>*/}
                                 <SubMenu key="sub3" title={<span><Icon type="user"/>用户</span>}>
-                                    <Menu.Item key="9">个人信息</Menu.Item>
-                                    <Menu.Item key="10">团队信息</Menu.Item>
+                                    {/*<Menu.Item key="9">个人信息</Menu.Item>*/}
+                                    {/*<Menu.Item key="10">团队信息</Menu.Item>*/}
                                     <Menu.Item key="11">注销</Menu.Item>
                                 </SubMenu>
                             </Menu>
@@ -82,6 +83,7 @@ export default class LayoutPage extends React.Component {
                                 {this.state.selectSection === "1" ? (
                                     <BoardList boardNameCallback={this.boardNameCallback}/>) : null}
                                 {this.state.selectSection === "2" ? (<CreateBoard/>) : null}
+                                {/*{this.state.selectSection === "10" ? (<GroupPage/>) : null}*/}
                             </Content>
                         </Layout>
                     </Layout>

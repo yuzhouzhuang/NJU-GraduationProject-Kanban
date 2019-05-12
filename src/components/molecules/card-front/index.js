@@ -11,9 +11,10 @@ import getPaletteColor from '../../../services/getPaletteColor'
 import {Paper, Paragraph} from '../../atoms'
 // import { Box } from '../../utilities'
 import {
-    Button, Modal, Form, Input, Radio, Select, InputNumber, Slider, DatePicker
+    Button, Modal, Form, Input, Radio, Select, InputNumber, Slider, DatePicker, Popconfirm, Badge, Tag, Switch
 } from 'antd';
-import {updateCard} from "../../../firebase/boards";
+import {updateCard, deleteCard, moveCard} from "../../../firebase/boards";
+
 moment.locale('zh-cn');
 const {Option} = Select;
 const CollectionCreateForm = Form.create({
@@ -35,6 +36,10 @@ const CollectionCreateForm = Form.create({
                 scale: Form.createFormField({
                     ...props.scale,
                     value: props.scale.value,
+                }),
+                isBlocked: Form.createFormField({
+                    ...props.isBlocked,
+                    value: props.isBlocked.value,
                 }),
                 progress: Form.createFormField({
                     ...props.progress,
@@ -102,7 +107,7 @@ const CollectionCreateForm = Form.create({
                                     {required: true, message: '请选择进度!'},
                                 ]
                             })(
-                                <Slider  min={0} max={9} marks={{
+                                <Slider min={0} max={9} marks={{
                                     0: '开始', 3: '进行', 6: '收尾', 9: '完成',
                                 }}
                                 />
@@ -121,24 +126,39 @@ const CollectionCreateForm = Form.create({
                             )}
                         </Form.Item>
                         <Form.Item
-                            label="颜色"
+                            label="阻塞"
+                        >
+                            {getFieldDecorator('isBlocked', {
+                                rules: [
+                                    {required: true, message: '请选择阻塞状态！'},
+                                ]
+                            })(
+                                <Switch/>
+                            )}
+                        </Form.Item>
+                        <Form.Item
+                            label="工作类型"
                             hasFeedback
                         >
                             {getFieldDecorator('color', {
                                 rules: [
-                                    {required: true, message: '请选择卡片颜色!'},
+                                    {required: true, message: '请选择工作项类型!'},
                                 ],
                             })(
-                                <Select placeholder="请选择卡片颜色">
-                                    <Option value="blue">蓝色</Option>
-                                    <Option value="yellow">黄色</Option>
-                                    <Option value="red">红色</Option>
-                                    <Option value="green">绿色</Option>
-                                    <Option value="orange">橘色</Option>
+                                <Select placeholder="请选择工作项类型">
+                                    <Option value="blue" style={{backgroundColor: theme.palette['blue'][100]}}>自定义工作</Option>
+                                    <Option value="yellow" style={{backgroundColor: theme.palette['yellow'][100]}}>功能需求</Option>
+                                    <Option value="red" style={{backgroundColor: theme.palette['red'][100]}}>缺陷</Option>
+                                    <Option value="green"
+                                            style={{backgroundColor: theme.palette['green'][100]}}>维护或技术工作</Option>
+                                    {/*<Option value="orange">橘色</Option>*/}
                                 </Select>
                             )}
                         </Form.Item>
                     </Form>
+                    <Popconfirm title="确认删除?" okText="确认" cancelText="取消" onConfirm={(record) => props.onDelete(record)}>
+                        <Button type="danger" block>删除卡片</Button>
+                    </Popconfirm>
                 </Modal>
             );
         }
@@ -200,6 +220,9 @@ class CardFront extends React.PureComponent {
             deadline: {
                 value: "",
             },
+            isBlocked: {
+                value: "",
+            },
         }
     };
 
@@ -227,7 +250,7 @@ class CardFront extends React.PureComponent {
         //     form.resetFields();
         //     this.setState({visible: false});
         // });
-        console.log('Received values of form: ', this.state.fields);
+        // console.log('Received values of form: ', this.state.fields);
         const {card, columnId, ...props} = this.props
         let boardId
         if (localStorage.getItem('board')) {
@@ -245,18 +268,76 @@ class CardFront extends React.PureComponent {
         console.log(this.state.fields.deadline.value._i)
         this.state.card = {
             ...this.props.card,
-            cardTitle : this.state.fields.name.value,
-            cardDescription :this.state.fields.description.value,
-            scale :this.state.fields.scale.value,
-            rate :this.state.fields.progress.value,
-            color:this.state.fields.color.value,
-            deadline : this.state.fields.deadline.value._i
+            cardTitle: this.state.fields.name.value,
+            cardDescription: this.state.fields.description.value,
+            scale: this.state.fields.scale.value,
+            rate: this.state.fields.progress.value,
+            color: this.state.fields.color.value,
+            deadline: this.state.fields.deadline.value._i,
+            isBlocked: this.state.fields.isBlocked.value ? 1 : 0
         }
-        updateCard({
-            ...this.state.card,
-        }, boardId, card.cardId, userId).then(card=>{},error=>{alert("错误")})
+        if (this.state.card.rate.toString() === "9") {
+            updateCard({
+                ...this.state.card,
+            }, boardId, card.cardId, userId).then(cards => {
+                setTimeout(
+                    () => moveCard(boardId, card.cardId, columnId, this.props.lastid, true), 1000)
+            }, error => {
+                alert("错误")
+            })
+        } else {
+            updateCard({
+                ...this.state.card,
+            }, boardId, card.cardId, userId).then(card => {
+            }, error => {
+                alert("错误")
+            })
+        }
         this.setState({visible: false});
     }
+    handleDelete = () => {
+        // const form = this.formRef.props.form;
+        // form.validateFields((err, values) => {
+        //     if (err) {
+        //         return;
+        //     }
+        //
+        //     console.log('Received values of form: ', values);
+        //     form.resetFields();
+        //     this.setState({visible: false});
+        // });
+        // console.log('Received values of form: ', this.state.fields);
+        const {card, columnId, ...props} = this.props
+        let boardId
+        if (localStorage.getItem('board')) {
+
+            boardId = JSON.parse(localStorage.getItem('board')).boardId
+            // boardId = localStorage.getItem('board').boardId
+        }
+
+        let userId
+        if (localStorage.getItem('user')) {
+
+            userId = JSON.parse(localStorage.getItem('user')).userId
+            // boardId = localStorage.getItem('board').boardId
+        }
+        // console.log(this.state.fields.deadline.value._i)
+        // this.state.card = {
+        //     ...this.props.card,
+        //     cardTitle : this.state.fields.name.value,
+        //     cardDescription :this.state.fields.description.value,
+        //     scale :this.state.fields.scale.value,
+        //     rate :this.state.fields.progress.value,
+        //     color:this.state.fields.color.value,
+        //     deadline : this.state.fields.deadline.value._i
+        // }
+        deleteCard(card.cardId, boardId).then(card => {
+        }, error => {
+            alert("错误")
+        })
+        this.setState({visible: false});
+    }
+
 
     saveFormRef = (formRef) => {
         this.formRef = formRef;
@@ -298,6 +379,9 @@ class CardFront extends React.PureComponent {
                         deadline: {
                             value: moment(card.deadline, 'YYYY-MM-DD'),
                         },
+                        isBlocked: {
+                            value: card.isBlocked === 1,
+                        }
                     }
                 }
             )
@@ -318,8 +402,10 @@ class CardFront extends React.PureComponent {
         // let color = getPaletteColor('shades', 100)
         // console.log(fields)
         return (
+
             <Container  {...props}
                         style={{background: theme.palette[card.color][100], height: size + 'px'}}>
+                {/*<Badge dot={card.isBlocked}>*/}
                 <Title onClick={this.showModal}>{card.cardTitle}</Title>
                 <CollectionCreateForm
                     {...fields} onChange={this.handleFormChange}
@@ -327,7 +413,12 @@ class CardFront extends React.PureComponent {
                     visible={this.state.visible}
                     onCancel={this.handleCancel}
                     onCreate={this.handleCreate}
+                    onDelete={this.handleDelete}
                 />
+                {card.isBlocked ?
+                    <Tag color="volcano"
+                         style={{position: 'absolute', right: '0px', bottom: '10px'}}>被阻塞的工作</Tag> : null}
+                {/*</Badge>*/}
                 {/* <IconContainer mt='8px'>
           <Icon name='Description' size='small' />
         </IconContainer> */}

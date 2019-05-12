@@ -13,7 +13,9 @@
     "styled-components": "^3.3.3",
     "styled-tools": "^0.6.0",
     "prop-types": "^15.6.2",
-    "history": "latest"
+    "bizcharts": "^3.5.2",
+    "history": "latest",
+    "moment": "latest"
   },
   "scripts": {
     "start": "react-scripts start",
