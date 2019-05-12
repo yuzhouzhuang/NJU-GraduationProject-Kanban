@@ -118,7 +118,7 @@ const CollectionCreateForm = Form.create({
                         >
                             {getFieldDecorator('deadline', {
                                 rules: [
-                                    {required: true, message: '请选择截止日期！'},
+                                    {required: true, message: '请选择截止日期！'}
                                 ]
                             })(
                                 <DatePicker
@@ -130,7 +130,7 @@ const CollectionCreateForm = Form.create({
                         >
                             {getFieldDecorator('isBlocked', {
                                 rules: [
-                                    {required: true, message: '请选择阻塞状态！'},
+                                    {required: true, message: '请选择阻塞状态！'}, {valuePropName: 'isBlocked'}
                                 ]
                             })(
                                 <Switch/>
@@ -385,7 +385,10 @@ class CardFront extends React.PureComponent {
                     }
                 }
             )
+            // console.log(this.state.fields.name)
+            // console.log(card.isBlocked)
         }
+
     }
 
     render() {

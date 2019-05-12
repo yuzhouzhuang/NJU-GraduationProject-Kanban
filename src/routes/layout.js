@@ -38,7 +38,7 @@ export default class LayoutPage extends React.Component {
                 <Layout className="layout">
                     <Header className="header">
                         <div className="logo">
-                            {/*<div>Kanban 看板</div>*/}
+                            Kanban看板
                         </div>
                     </Header>
                     <Layout>
