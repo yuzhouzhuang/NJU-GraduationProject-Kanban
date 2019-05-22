@@ -6,14 +6,22 @@ import {prop} from 'styled-tools'
 import {Redirect} from 'react-router-dom'
 import {Header, BoardHeader, BoardList} from '../components'
 import {getBoard, deleteBoard, createList} from '../firebase/boards'
-import {Menu, Icon} from 'antd';
+import {Menu, Icon, Table} from 'antd';
 import StatisticPage from './statisticPage'
 import GroupPage from "./groupInfo";
+import LogPage from "./logPage";
 
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 // import getPaletteColor from '../services/getPaletteColor'
-
+const columns = [{
+    title: '用户',
+    dataIndex: 'userName',
+    width: '30%'
+}, {
+    title: '操作',
+    dataIndex: 'content',
+}];
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,17 +92,17 @@ class Board extends React.PureComponent {
         getBoard(boardId).then(board => {
             this.setState({board: board})
             localStorage.setItem('board', JSON.stringify(board))
-            if (board.columns.length === 0){
+            if (board.columns.length === 0) {
                 createList({
                     columnName: "初始列表项",
                     boardId: boardId,
-                    columnOrder:1,
+                    columnOrder: 1,
                     columnWIP: 1000,
                 })
                 createList({
                     columnName: "完成列表项",
                     boardId: boardId,
-                    columnOrder:2,
+                    columnOrder: 2,
                     columnWIP: 1000,
                 })
             }
@@ -151,6 +159,9 @@ class Board extends React.PureComponent {
                             <Icon type="bar-chart"/>统计
                         </Menu.Item>
                         <Menu.Item key="4">
+                            <Icon type="table"/>记录
+                        </Menu.Item>
+                        <Menu.Item key="5">
                             <Icon type="user"/>团队
                         </Menu.Item>
                     </Menu>
@@ -160,7 +171,8 @@ class Board extends React.PureComponent {
                     {(this.state.current === "1" || this.state.current === "2") ?
                         <BoardList board={board} editable={this.state.current === "2"}/> : null}
                     {this.state.current === "3" ? <StatisticPage boardId={this.props.boardId}/> : null}
-                    {this.state.current === "4" ? <GroupPage boardId={this.props.boardId}/> : null}
+                    {this.state.current === "5" ? <GroupPage boardId={this.props.boardId}/> : null}
+                    {this.state.current === "4" ? <LogPage boardId={this.props.boardId}/> : null}
                 </Body>
             </Container>
         )

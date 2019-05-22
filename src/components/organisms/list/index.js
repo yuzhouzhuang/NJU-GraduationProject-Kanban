@@ -294,7 +294,7 @@ class List extends React.PureComponent {
                     >
                         <Button
                             onClick={this.showModal}
-                            style={{fontSize:'15px'}}
+                            style={{fontSize:'15px', minHeight:'50px', maxHeight:'50px'}}
                         >{this.props.isEdged ? title : (title + "(" + cards.length + "/" + wip + ")")}</Button>
 
                         <CollectionCreateForm

@@ -65,7 +65,7 @@ export default class GroupPage extends React.Component {
             render: (isOwner, record) => (
                 <span>
 
-     {isOwner ? null : <Popconfirm title="确认删除？" onConfirm={() => this.handleDelete(record)}>
+     {isOwner ? null : <Popconfirm title="确认删除？" cancelText="取消" okText="确认" onConfirm={() => this.handleDelete(record)}>
          <a href="javascript:;">删除</a>
      </Popconfirm>}
     </span>

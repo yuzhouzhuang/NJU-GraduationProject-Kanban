@@ -18,24 +18,25 @@ import {
 // import reqwest from 'reqwest';
 
 const columns = [{
-    title: '用户',
-    dataIndex: 'userName',
+    title: '卡片',
+    dataIndex: 'cardTitle',
     width: '30%'
 }, {
-    title: '操作',
-    dataIndex: 'content',
+    title: '结束时间',
+    dataIndex: 'finishDate',
+    width: '40%'
+}, {
+    title: '前置时间',
+    dataIndex: 'leadTime',
 }];
 
 const cols = {
     leadTime: {
-        alias: "前置时间"
+        alias: "吞吐量(个/周)",
     },
-    cardTitle: {
-        alias: "卡片名称"
-    },
-    finishDate:{
-        alias: "完成日期",
-        type:"time",
+    finishDate: {
+        alias: "日期",
+        type: "time",
     }
 };
 
@@ -43,11 +44,11 @@ export default class StatisticPage extends React.Component {
     state = {
         data: [],
         leadTime: '',
-        statisticsInfo: []
+        statisticsInfo: [],
+        throughput: []
     };
 
     componentDidMount() {
-        this.fetchLog();
         this.fetchLeadTime();
         this.fetchThroughput();
         this.fetchStatisticsInfo();
@@ -91,7 +92,9 @@ export default class StatisticPage extends React.Component {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
         }).then(this.handleLeadTimeResponse).then(data => {
-
+                if(data.length>5){
+                    data = data.substr(0,8)
+                }
                 this.setState({
                     leadTime: data
                 })
@@ -111,14 +114,19 @@ export default class StatisticPage extends React.Component {
     fetchThroughput = (params = {}) => {
         // console.log('params:', params);
         this.setState({loading: true});
-        fetch(`http://101.132.188.238:8080/kanbans/throughput/${this.props.boardId}`, {
+        fetch(`http://101.132.188.238:8080/kanbans/weekThroughput/${this.props.boardId}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
         }).then(this.handleThroughputResponse).then(data => {
-
-                this.setState({
-                    throughput: data
+                let element = []
+                data.forEach(combo => {
+                    let combos = combo.split("||")
+                    element.push({finishDate: combos[0], leadTime: parseInt(combos[1])})
                 })
+                this.setState({
+                    throughput: element
+                })
+                // console.log(data)
             }
         )
         ;
@@ -157,61 +165,42 @@ export default class StatisticPage extends React.Component {
     }
 
     render() {
-        console.log(this.state.statisticsInfo)
+        // console.log(this.state.statisticsInfo)
         return (
             <div>
-                {/*<span>前置时间:{this.state.leadTime}</span>*/}
-                <Statistic title="前置时间" value={this.state.leadTime}/>
-                <Chart height={400} data={this.state.statisticsInfo} scale={cols} forceFit>
-                    <Axis name="finishDate"/>
-                    {/*<Axis name="cardTitle" visible={false}/>*/}
-                    <Axis name="leadTime"/>
-                    {/*<Tooltip*/}
-                    {/*    crosshairs={{*/}
-                    {/*        type: "y"*/}
-                    {/*    }}*/}
-                    {/*/>*/}
-                    <Geom type="line" position="finishDate*leadTime"/>
-                    {/*<Geom*/}
-                    {/*    type="point"*/}
-                    {/*    position="finishDate*leadTime"*/}
-                    {/*    size={4}*/}
-                    {/*    shape={"circle"}*/}
-                    {/*    style={{*/}
-                    {/*        stroke: "#fff",*/}
-                    {/*        lineWidth: 1*/}
-                    {/*    }}*/}
-                    {/*/>*/}
+                <h2>每周吞吐量</h2>
+                <Chart height={400} data={this.state.throughput} scale={cols} forceFit>
+                    <Axis name="finishDate" title/>
+                    <Axis name="leadTime" title/>
+                    <Geom type="interval" position="finishDate*leadTime"/>
                     <Tooltip
-                        showTitle={false}
                         crosshairs={{
-                            type: "cross"
+                            type: "y"
                         }}
-                        //itemTpl="<li data-index={index} style=&quot;margin-bottom:4px;&quot;><span style=&quot;background-color:{color};&quot; class=&quot;g2-tooltip-marker&quot;></span>{name}<br/>{value}</li>"
                     />
-                    {/*<Axis name="height" />*/}
-                    {/*<Axis name="weight" />*/}
-                    <Geom
-                        type="point"
-                        position="finishDate*leadTime"
-                        opacity={0.65}
-                        shape="circle"
-                        size={4}
-                        tooltip={[
-                            "finishDate*leadTime*cardTitle",
-                            (finishDate,leadTime,cardTitle) => {
-                                return {
-                                    name: cardTitle,
-                                    value:  leadTime + "(天)"
-                                };
-                            }
-                        ]}
-                    />
+                    {/*<Geom*/}
+                    {/*    type="line"*/}
+                    {/*    position="finishDate*leadTime"*/}
+                    {/*    opacity={0.65}*/}
+                    {/*    shape="circle"*/}
+                    {/*    size={4}*/}
+                    {/*    tooltip={[*/}
+                    {/*        "finishDate*leadTime*cardTitle",*/}
+                    {/*        (finishDate, leadTime, cardTitle) => {*/}
+                    {/*            return {*/}
+                    {/*                name: cardTitle,*/}
+                    {/*                value: leadTime + "(天)"*/}
+                    {/*            };*/}
+                    {/*        }*/}
+                    {/*    ]}*/}
+                    {/*/>*/}
                 </Chart>
+                {/*<Statistic title="前置时间" value={this.state.leadTime}/>*/}
                 <Table
+                    bordered
                     columns={columns}
-                    // rowKey={"userName"}
-                    dataSource={this.state.data}
+                    dataSource={this.state.statisticsInfo}
+                    title={() => ('平均前置时间:' + this.state.leadTime)}
                 />
             </div>
         );

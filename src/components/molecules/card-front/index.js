@@ -221,7 +221,7 @@ class CardFront extends React.PureComponent {
                 value: "",
             },
             isBlocked: {
-                value: "",
+                value: false,
             },
         }
     };
@@ -402,8 +402,6 @@ class CardFront extends React.PureComponent {
         const size = card.scale ? 50 + 30 * Math.log(card.scale) : 100;
         const fields = this.state.fields;
 
-        // let color = getPaletteColor('shades', 100)
-        // console.log(fields)
         return (
 
             <Container  {...props}
@@ -418,30 +416,14 @@ class CardFront extends React.PureComponent {
                     onCreate={this.handleCreate}
                     onDelete={this.handleDelete}
                 />
+                <Tag
+                     style={{position: 'absolute', right: '0px', bottom: '10px'}}>{card.creatorName}</Tag>
                 {card.isBlocked ?
                     <Tag color="volcano"
-                         style={{position: 'absolute', right: '0px', bottom: '10px'}}>被阻塞的工作</Tag> : null}
-                {/*</Badge>*/}
-                {/* <IconContainer mt='8px'>
-          <Icon name='Description' size='small' />
-        </IconContainer> */}
+                         style={{position: 'absolute', left: '10px', bottom: '10px'}}>被阻塞的工作</Tag> : null}
             </Container>
 
         )
-        // return (
-        //     <Link
-        //         to={{pathname: `/c/${boardId}/${columnId}/${card.cardId}`, state: {modal: true, card: card}}}
-        //         style={{textDecoration: 'none'}}
-        //     >
-        //         <Container {...props}
-        //                    style={{background: theme.palette[card.color][100]}}>
-        //             <Title>{card.cardTitle}</Title>
-        //             {/* <IconContainer mt='8px'>
-        //   <Icon name='Description' size='small' />
-        // </IconContainer> */}
-        //         </Container>
-        //     </Link>
-        // )
     }
 }
 

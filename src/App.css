@@ -36,7 +36,7 @@
 
 .layout {
     min-height: 1500px;
-    height: 100%;
+    height: 150%;
 }
 
 .login-form {
@@ -90,5 +90,6 @@
 }
 .board-body{
     /*float: right;*/
+    /*min-height: 100%;*/
     margin-top: 2%;
 }

@@ -8,6 +8,7 @@ import Home from "./home";
 import Board from "./board";
 import GroupPage from './groupInfo'
 import {history} from "../services/history"
+import Background from '../logo.svg';
 
 const {SubMenu} = Menu;
 const {Header, Content, Sider} = Layout;
@@ -38,7 +39,7 @@ export default class LayoutPage extends React.Component {
                 <Layout className="layout">
                     <Header className="header">
                         <div className="logo">
-                            Kanban看板
+                            KANBAN
                         </div>
                     </Header>
                     <Layout>
